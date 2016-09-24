@@ -2,17 +2,26 @@
 # vi: :shiftwidth=2:nu:ai:set tabstop=2:softtabstop=2:expandtab
 
 - hosts: all
+  gather_facts: no
   vars:
-    ini_true: true
-    ini_false: false
-    TODO_Section: Midnight-Commander
-    ini:
-      mcview_remember_file_position: 1
-      auto_save_setup_panels: 1
-      use_internal_view: 0
-      use_internal_edit: 0
-      confirm_delete: 0
-      confirm_exit: 0
+    ini_true: "{{ true | bool | lower }}"
+    ini_false: "{{ false | bool | lower }}"
+    tr:
+      - section: Midnight-Commander
+        data:
+          - { key: mcview_remember_file_position, val: 1 }
+          - { key: auto_save_setup_panels, val: 1 }
+          - { key: use_internal_view, val: 0 }
+          - { key: use_internal_edit, val: 0 }
+          - { key: confirm_delete, val: 0 }
+          - { key: confirm_exit, val: 0 }
+      - section: Layout
+        data:
+          - { key: menubar_visible, val: 0 }
+      - section: Panels
+        data:
+          - { key: navigate_with_arrows, val: "{{ ini_true }}" }
+          - { key: mix_all_files,        val: "{{ ini_true }}" }
 
   tasks:
    - name: check if ini exist
@@ -21,13 +30,15 @@
 
    - name: notify if ini absent
      when: mc_ini.stat.exists == False
-     debug: msg="you'd forget to run mc your very first time" 
+     debug: msg="you'd forget to run mc your very first time"
 
    - name: tune mc and be god
      when: mc_ini.stat.exists == True
      ini_file: dest=~/.config/mc/ini
-               section={{ TODO_Section }}
-               option={{ item.key }}
-               value={{ item.value }}
-     with_dict: "{{ ini }}"
+               section={{ item.0.section }}
+               option={{ item.1.key }}
+               value={{ item.1.val }}
+     with_subelements:
+       - "{{ tr }}"
+       - data
 

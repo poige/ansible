@@ -1,8 +1,19 @@
 ---
+# vi: :shiftwidth=2:nu:ai:set tabstop=2:softtabstop=2:expandtab
+
 - hosts: all
   vars:
-   ini_true: true
-   ini_false: false
+    ini_true: true
+    ini_false: false
+    TODO_Section: Midnight-Commander
+    ini:
+      mcview_remember_file_position: 1
+      auto_save_setup_panels: 1
+      use_internal_view: 0
+      use_internal_edit: 0
+      confirm_delete: 0
+      confirm_exit: 0
+
   tasks:
    - name: check if ini exist
      stat: path=~/.config/mc/ini
@@ -14,18 +25,9 @@
 
    - name: tune mc and be god
      when: mc_ini.stat.exists == True
-     ini_file: dest=~/.config/mc/ini no_extra_spaces=yes
-               section={{ item.section }}
-               option={{ item.option }}
+     ini_file: dest=~/.config/mc/ini
+               section={{ TODO_Section }}
+               option={{ item.key }}
                value={{ item.value }}
-     with_items:
-       - { section: Midnight-Commander, option: mcview_remember_file_position, value: 1 }
-       - { section: Midnight-Commander, option: auto_save_setup_panels, value: 1 }
-       - { section: Midnight-Commander, option: use_internal_view, value: 0 }
-       - { section: Midnight-Commander, option: use_internal_edit, value: 0 }
-       - { section: Midnight-Commander, option: confirm_delete, value: 0 }
-       - { section: Midnight-Commander, option: confirm_exit, value: 0 }
-       - { section: Layout, option: message_visible, value: 0 }
-       - { section: Layout, option: menubar_visible, value: 1 }
-       - { section: Panels, option: navigate_with_arrows, value: "{{ ini_true | bool | lower }}" }
-       - { section: Panels, option: fast_reload, value: "{{ ini_true | bool | lower }}" }
+     with_dict: "{{ ini }}"
+

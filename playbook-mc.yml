@@ -6,7 +6,7 @@
   vars:
     ini_true: "{{ true | bool | lower }}"
     ini_false: "{{ false | bool | lower }}"
-    tr:
+    mc_ini:
       - section: Midnight-Commander
         data:
           - { key: mcview_remember_file_position, val: 1 }
@@ -24,16 +24,17 @@
           - { key: mix_all_files,        val: "{{ ini_true }}" }
 
   tasks:
-   - name: check if ini exist
+   - name: Checking if MC ini exists (for current user)
      stat: path=~/.config/mc/ini
-     register: mc_ini
+     register: stat_mcini
 
-   - name: notify if ini absent
-     when: mc_ini.stat.exists == False
-     debug: msg="you'd forget to run mc your very first time"
+   - name: Warn mc ini was not found
+     debug: msg="Couldn not find existing mc ini"
+     #assert: { that: stat_mcini.stat.exists == True, msg: FFF }
+     when: stat_mcini.stat.exists == False
 
-   - name: tune mc and be god
-     when: mc_ini.stat.exists == True
+   - name: Setting up specified values to mc ini
+     when: stat_mcini.stat.exists == True
      ini_file: dest=~/.config/mc/ini
                section={{ item.0.section }}
                option={{ item.1.key }}

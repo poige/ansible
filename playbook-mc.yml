@@ -11,17 +11,22 @@
         data:
           - { key: mcview_remember_file_position, val: 1 }
           - { key: auto_save_setup_panels, val: 1 }
-          - { key: use_internal_view, val: 0 }
-          - { key: use_internal_edit, val: 0 }
-          - { key: confirm_delete, val: 0 }
+          - { key: use_internal_view, val: 1 }
+          - { key: use_internal_edit, val: 1 }
+          - { key: confirm_delete, val: 1 }
           - { key: confirm_exit, val: 0 }
+          - { key: classic_progressbar, val: 0 }
       - section: Layout
         data:
           - { key: menubar_visible, val: 0 }
+          - { key: message_visible, val: 0 }
       - section: Panels
         data:
-          - { key: navigate_with_arrows, val: "{{ ini_true }}" }
+          - { key: navigate_with_arrows,  val: "{{ ini_true }}" }
           - { key: mix_all_files,        val: "{{ ini_true }}" }
+          - { key: show_backups,        val: "{{ ini_true }}" }
+          - { key: show_dot_files,        val: "{{ ini_true }}" }
+
 
   tasks:
    - name: Checking if MC ini exists (for current user)
